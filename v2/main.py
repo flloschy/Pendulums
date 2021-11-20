@@ -22,7 +22,7 @@ Pendulums = [DoublePendulum(offsetx, offsety, c, c, c, c, c)]
 
 clock = pygame.time.Clock()
 s = pygame.Surface((WIDTH, HEIGHT))
-s.set_alpha(2)  # max 128
+s.set_alpha(80)  # max 128
 s.fill(Color.black)
 
 laspos = [0, 0]

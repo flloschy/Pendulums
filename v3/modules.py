@@ -32,32 +32,42 @@ class Color:
             self.blue,
             self.pink,
             self.white,
-            self.violet
+            self.violet,
         ]
+        #
+        for _ in range(0, 500):
+            self.listing.append((rint(0, 255), rint(0, 255), rint(0, 255)))
 
+
+    def reset(self):
+        self.listing = [
+            self.red,
+            self.orange,
+            self.yellow,
+            self.green,
+            self.blue,
+            self.pink,
+            self.white,
+            self.violet,
+        ]
+        for _ in range(0, 500):
+            self.listing.append((rint(0, 255), rint(0, 255), rint(0, 255)))
 
 class DoublePendulum:
     def __init__(self, x, y, tailcolor, linecolor1, linecolor2, bob1, bob2):
-        self.radius1, self.radius2 = rint(2, 250), rint(2, 250)
-        self.mass1, self.mass2 = rint(1, 70), rint(1, 70)
-        self.a1, self.a2 = math.pi/rint(1, 100), math.pi/rint(1, 100)
+        self.radius1, self.radius2 = rint(20, 400), rint(20, 400)
+        self.mass1, self.mass2 = rint(1, 80), rint(1, 80)
+        self.a1, self.a2 = math.pi/rint(1, 8), math.pi/rint(1, 8)
         self.a1_v, self.a2_v = 0, 0
         self.g, self.tailcol = 1, tailcolor
         self.lastx2, self.lasty2 = -1, -1
         self.offsetx, self.offsety = x, y
         self.tail, self.friction = [], 1
-        self.color = {
-            "line1": linecolor1,
-            "line2": linecolor2,
-            "bob1": bob1,
-            "bob2": bob2
-        },
-        self.x1 = 0
-        self.y1 = 0
-        self.x2 = 0
-        self.y2 = 0
+        self.color = {"line1": linecolor1, "line2": linecolor2, "bob1": bob1, "bob2": bob2},
+        self.x1, self.y1 = 0, 0
+        self.x2, self.y2 = 0, 0
 
-    def calcpos(self, tick):
+    def calcpos(self):
         try:
             num1 = -self.g * (2 * self.mass1 + self.mass2) * math.sin(self.a1)
             num2 = -self.mass2 * self.g * math.sin(self.a1 - 2 * self.a2)
@@ -87,40 +97,41 @@ class DoublePendulum:
             self.a2_v *= self.friction
             ####################
         except:
-            x1 = 0
-            y1 = 0
-            x2 = 0
-            y2 = 0
-        self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
-        remove = 7
-        for t in self.tail:
-            if tick % 10 == 0:
+            self.a1 = 0
+            self.a2 = 0
+            self.calcpos()
+        else:
+            self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
+            remove = 10
+            for t in self.tail:
                 r, g, b = t[4]
                 if r-remove > 0: r-=remove
                 if g-remove > 0: g-=remove
                 if b-remove > 0: b-=remove
+                if r-remove-1 <= 0 and g-remove-1 <= 0 and b-remove-1 <= 0: self.tail.remove(t); continue
                 t[4] = (r, g, b)
-                if tick % 20 == 0: t[5] = t[5]-1
+                t[5] -= 0.25
                 if t[5] <= 1: self.tail.remove(t); continue
 
-    def draw(self, WIN, tick):
+    def draw(self, WIN):
         pos = [self.x1, self.y1, self.x2, self.y2]
-        if tick != 1: self.tail.append([pos[2], pos[3], self.lastx2, self.lasty2, self.tailcol, 10])
+        self.tail.append([pos[2], pos[3], self.lastx2, self.lasty2, self.tailcol, 10])
 
-        self.lastx2 = pos[2]
-        self.lasty2 = pos[3]
-        circleWidth = 0
-        # pygame.draw.circle(WIN, COLOR.gray, (self.offsetx, self.offsety), radius=self.radius1+self.radius2+self.mass2+5, width=1)
+        self.lastx2, self.lasty2 = pos[2], pos[3]
+        circleWidth = 10
         pygame.draw.line(WIN, self.color[0]["line1"], start_pos=(self.offsetx, self.offsety), end_pos=(self.offsetx+pos[0], self.offsety+pos[1]))
         pygame.draw.line(WIN, self.color[0]["line2"], start_pos=(self.offsetx+pos[0], self.offsety+pos[1]), end_pos=(self.offsetx+pos[2], self.offsety+pos[3]))
+        pygame.draw.circle(WIN, (0, 0, 0), (self.offsetx+pos[0], self.offsety+pos[1]), radius=self.mass1-(circleWidth), width=0)
         pygame.draw.circle(WIN, self.color[0]["bob2"], (self.offsetx+pos[0], self.offsety+pos[1]), radius=self.mass1, width=circleWidth)
+        pygame.draw.circle(WIN, (0, 0, 0), (self.offsetx+pos[2], self.offsety+pos[3]), radius=self.mass2-(circleWidth), width=0)
         pygame.draw.circle(WIN, self.color[0]["bob2"], (self.offsetx+pos[2], self.offsety+pos[3]), radius=self.mass2, width=circleWidth)
 
     def drawtail(self, WIN):
         pos = [self.x1, self.y1, self.x2, self.y2]
         # pygame.draw.line(WIN, t[4], start_pos=(self.offsetx+t[0], self.offsety+t[1]), end_pos=(self.offsetx+t[2], self.offsety+t[3]), width=t[5])
         for t in self.tail:
-            pygame.draw.circle(WIN, t[4], (self.offsetx+t[0], self.offsety+t[1]), radius=t[5])
+            pygame.draw.line(WIN, t[4], start_pos=(self.offsetx+t[0], self.offsety+t[1]), end_pos=(self.offsetx+t[2], self.offsety+t[3]), width=int(t[5]))
+            pygame.draw.circle(WIN, t[4], (self.offsetx+t[0], self.offsety+t[1]), radius=int(t[5]))
         if len(self.tail) >= 1: pygame.draw.circle(WIN, self.tail[-1][4], (self.offsetx+pos[2], self.offsety+pos[3]), radius=self.tail[-1][5]-5)
 
 class Slider:
@@ -139,8 +150,8 @@ class Slider:
                 return True
 
     def draw(self, WIN, COLOR):
-        pygame.draw.line(WIN, COLOR.gray, start_pos=(self.xpos, self.ypos), end_pos=(self.xpos+self.xsize, self.ypos), width=self.ysize)
-        pygame.draw.line(WIN, COLOR.white, start_pos=(self.xpos, self.ypos), end_pos=(self.xpos+self.current, self.ypos), width=self.ysize)
+        pygame.draw.line(WIN, COLOR.darkred, start_pos=(self.xpos, self.ypos), end_pos=(self.xpos+self.xsize, self.ypos), width=self.ysize)
+        pygame.draw.line(WIN, COLOR.red, start_pos=(self.xpos, self.ypos), end_pos=(self.xpos+self.current, self.ypos), width=self.ysize)
     
     def drawtext(self, WIN, FONT, COLOR, text):
         WIN.blit(FONT.render(f'{self.text}: {text}', False, COLOR.white), (self.xpos+self.xsize+10, self.ypos))
