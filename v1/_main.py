@@ -2,6 +2,8 @@ import pygame, math
 pygame.font.init()
 from random import randint as rint
 
+print(math.pi)
+
 WIDTH, HEIGHT = 1000, 1000
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 FONT = pygame.font.SysFont(pygame.font.get_default_font(), 20)
@@ -49,7 +51,7 @@ s.fill(BLACK)
 friction = 0.99
 
 tail = []
-remove = 30
+remove = 1
 
 tick = 0
 
@@ -85,8 +87,8 @@ while True:
     else: 
         WIN.blit(FONT.render(f'FPS: max', False, WHITE), (10, 20))
     
-    if  -5 <= (GRAVITATION.current-100)//12 >= -5:
-        g = (GRAVITATION.current-100)//12
+    if  -5 <= (GRAVITATION.current-100)/12 >= -5:
+        g = (GRAVITATION.current-100)/12
     WIN.blit(FONT.render(f'G Force: {g}', False, WHITE), (10, 50))
 
     if 1 <= (BOB1.current//2) >= 1:
