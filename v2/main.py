@@ -40,7 +40,7 @@ lastT = time.perf_counter()
 blackboxrect = pygame.Rect(0, 0, 330, 85)
 while True:
     start = time.perf_counter()
-    # clock.tick(106)
+    clock.tick(60)
     WIN.blit(s, (0, 0))
     # WIN.fill(Color.black)
 
@@ -116,7 +116,6 @@ while True:
     print(zoom)
 
     tick += 1
-    if tick % 10 == 0:
-        FPS = int((time.perf_counter()-start)*10000)
-    WIN.blit(FONT.render(f'FPS: {FPS}', False, Color.white), (10, 70))
+    WIN.blit(FONT.render(f'FPS: {round(FPS, 0)}', False, Color.white), (10, 70))
+    FPS = clock.get_fps()
     pygame.display.update()
