@@ -102,7 +102,7 @@ class DoublePendulum:
             self.calcpos()
         else:
             self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
-            remove = 10
+            remove = 1
             for t in self.tail:
                 r, g, b = t[4]
                 if r-remove > 0: r-=remove

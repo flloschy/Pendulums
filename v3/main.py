@@ -3,7 +3,7 @@ from random import choice
 import pygame, time
 pygame.font.init()
 
-FPS = 100
+FPS = 60
 TPS = FPS * 2
 Color = Color()
 
@@ -118,8 +118,12 @@ def drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, z
                     Pendulums.clear()
                     Color.reset()
                     Pendulums.append(DoublePendulum(offsetx, offsety, c, c, c, c, c))
+                    slider[0].current = 200
+                    slider[1].current = TPS
 
             elif event.type == pygame.MOUSEBUTTONUP and not slided and r:
+                try: c = choice(Color.listing)
+                except Exception: Color.reset()
                 c = choice(Color.listing)
                 Color.listing.remove(c)
                 Pendulums.append(DoublePendulum(x, y, c, c, c, c, c))
