@@ -8,13 +8,14 @@ TPS = FPS * 2
 Color = Color()
 
 WIDTH, HEIGHT = 1000, 1000
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+WIN = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 WIN.fill(Color.black)
 FONT = pygame.font.SysFont(pygame.font.get_default_font(), 20)
 offsetx, offsety = WIDTH//2, HEIGHT//2
 
+transparency = 40
 s = pygame.Surface((WIDTH, HEIGHT))
-s.set_alpha(40)  # max 128
+s.set_alpha(transparency)  # max 128
 s.fill(Color.black)
 
 globalgravity = 1
@@ -31,7 +32,7 @@ clock = pygame.time.Clock()
 lastFrameTick = 1
 lastPhysikTick = 1
 
-def drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, zoom, lastpos, start):
+def drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, zoom, lastpos, offsetx, offsety):
     clock.tick(FPS)
     WIN.blit(s, (0, 0))
     l, m, r = pygame.mouse.get_pressed()
@@ -95,6 +96,16 @@ def drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, z
                                 c = choice(Color.listing)
                                 Color.listing.remove(c)
                                 Pendulums.append(DoublePendulum(x, y, c, c, c, c, c))
+                            elif event.type == pygame.VIDEORESIZE:
+                                WIN = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+                                WIDTH = event.w
+                                HEIGHT = event.h
+                                offsetx = WIDTH//2
+                                offsety = HEIGHT//2
+                                ns = pygame.Surface((WIDTH, HEIGHT))
+                                ns.set_alpha(transparency)  # max 128
+                                ns.fill(Color.black)
+                                s = ns
                         lastpos = (x, y)
                         pygame.display.update()
                 elif event.key == pygame.K_ESCAPE:
@@ -127,9 +138,20 @@ def drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, z
                 if event.button == 4: zoom += 1
                 if event.button == 5 and zoom != 0: zoom -= 1
 
+            elif event.type == pygame.VIDEORESIZE:
+                WIN = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+                WIDTH = event.w
+                HEIGHT = event.h
+                offsetx = WIDTH//2
+                offsety = HEIGHT//2
+                ns = pygame.Surface((WIDTH, HEIGHT))
+                ns.set_alpha(transparency)  # max 128
+                ns.fill(Color.black)
+                s = ns
+
     WIN.blit(FONT.render(f'FPS: {round(clock.get_fps(), 0)}', False, Color.white), (10, 70))
     lastpos = [x, y]
-    return globalgravity, TPS, zoom, lastpos
+    return globalgravity, TPS, zoom, lastpos, s, offsetx, offsety
 
 def physiktick():
     for pen in Pendulums:
@@ -142,6 +164,6 @@ while True:
         lastPhysikTick = time.perf_counter()
 
     if time.perf_counter() - lastFrameTick > 1/FPS:
-        globalgravity, TPS, zoom, lastpos = \
-            drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, zoom, lastpos, start)
+        globalgravity, TPS, zoom, lastpos, s, offsetx, offsety = \
+            drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, zoom, lastpos, offsetx, offsety)
         lastFrameTick = time.perf_counter()
