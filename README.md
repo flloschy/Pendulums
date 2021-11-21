@@ -8,5 +8,6 @@ press *s* to save the current state of the sim. \
 press *l* to load a saved state. \
 press *r* to reset the sim. \
 press *p* to pause the sim. \
-press *p* again to unpause.
+press *p* again to unpause. \
+press *h* to show the hitboxes.
 ___ 
