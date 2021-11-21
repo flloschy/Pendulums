@@ -129,8 +129,8 @@ def drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, z
                     for pen in preparedPends: pen["tail"] = []
                     save = {"g": globalgravity, "pend": preparedPends}
                     file = f'./v3/saves/{time.strftime("%Y-%m-%d_%H-%M-%S.json")}'
-                    try: json.dump(save, open(file, "x"), indent = 0)
-                    except: print("Loading Failed...")
+                    try: json.dump(save, open(file, "x"), indent = 1)
+                    except Exception: print("Saving Failed...")
                 elif event.key == pygame.K_l:
                     dirlist = os.listdir("./v3/saves/")
                     if not dirlist: print("\n--- There are no saves.\n"); continue
