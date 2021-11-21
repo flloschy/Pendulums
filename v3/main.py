@@ -26,7 +26,7 @@ globalgravity = 1
 zoom = 1
 lastpos = (0, 0)
 
-slider = [ Slider(200, 20, 10, 10, 200, "Gravitation"), Slider(200, 20, 10, 50, TPS, "TPS") ]
+slider = [ Slider(200, 20, 10, 10, 200, "Gravity"), Slider(200, 20, 10, 50, TPS, "TPS") ]
 c = choice(Color.listing)
 Color.listing.remove(c)
 Pendulums = [DoublePendulum(offsetx, offsety, c, c, c, c, c)]
@@ -59,7 +59,7 @@ def drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, z
         slid = sli.slide(x, y, l)
         if slid: slided = True
         sli.draw(WIN, Color)
-        if sli.text == "Gravitation":
+        if sli.text == "Gravity":
             if slid: globalgravity = (sli.current-100)/100
             sli.drawtext(WIN, FONT, Color, globalgravity)
         elif sli.text == "TPS":

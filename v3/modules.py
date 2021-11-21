@@ -35,8 +35,8 @@ class Color:
             self.violet,
         ]
         #
-        for _ in range(0, 500):
-            self.listing.append((rint(0, 255), rint(0, 255), rint(0, 255)))
+        # for _ in range(0, 500):
+        #     self.listing.append((rint(0, 255), rint(0, 255), rint(0, 255)))
 
 
     def reset(self):
@@ -50,8 +50,8 @@ class Color:
             self.white,
             self.violet,
         ]
-        for _ in range(0, 500):
-            self.listing.append((rint(0, 255), rint(0, 255), rint(0, 255)))
+        # for _ in range(0, 500):
+        #     self.listing.append((rint(0, 255), rint(0, 255), rint(0, 255)))
 
 class DoublePendulum:
     def __init__(self, x, y, tailcolor, linecolor1, linecolor2, colorbob1, colorbob2, radius1=None, radius2=None, mass1=None, mass2=None, a1=None, a2=None, a1_v=None, a2_v=None, g=None, tail=None):
