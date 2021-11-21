@@ -129,26 +129,72 @@ class DoublePendulum:
                 t[5] -= 0.25
                 if t[5] <= 1: self.tail.remove(t); continue
 
-    def draw(self, WIN):
+    def draw(self, WIN, hitbox):
         pos = [self.x1, self.y1, self.x2, self.y2]
         self.tail.append([pos[2], pos[3], self.lastx2, self.lasty2, self.tailcol, 10])
 
         self.lastx2, self.lasty2 = pos[2], pos[3]
         circleWidth = 10
-        pygame.draw.line(WIN, self.color[0]["line1"], start_pos=(self.offsetx, self.offsety), end_pos=(self.offsetx+pos[0], self.offsety+pos[1]))
-        pygame.draw.line(WIN, self.color[0]["line2"], start_pos=(self.offsetx+pos[0], self.offsety+pos[1]), end_pos=(self.offsetx+pos[2], self.offsety+pos[3]))
-        pygame.draw.circle(WIN, (0, 0, 0), (self.offsetx+pos[0], self.offsety+pos[1]), radius=self.mass1-(circleWidth), width=0)
-        pygame.draw.circle(WIN, self.color[0]["bob2"], (self.offsetx+pos[0], self.offsety+pos[1]), radius=self.mass1, width=circleWidth)
-        pygame.draw.circle(WIN, (0, 0, 0), (self.offsetx+pos[2], self.offsety+pos[3]), radius=self.mass2-(circleWidth), width=0)
-        pygame.draw.circle(WIN, self.color[0]["bob2"], (self.offsetx+pos[2], self.offsety+pos[3]), radius=self.mass2, width=circleWidth)
+        def drawhitbox():
+            pygame.draw.rect(WIN, (255, 0, 0), pygame.Rect(self.offsetx, self.offsety, pos[0], pos[1]), width=1) #line1
+            pygame.draw.rect(WIN, (255, 0, 0), pygame.Rect(self.offsetx+pos[0], self.offsety+pos[1], -(pos[0]-pos[2]), -(pos[1]-pos[3])), width=1) #line2
+            pygame.draw.rect(WIN, (255, 0, 0), pygame.Rect(self.offsetx+pos[0]-self.mass1, self.offsety+pos[1]-self.mass1, self.mass1*2, self.mass1*2), width=1) #bob1
+            pygame.draw.rect(WIN, (255, 0, 0), pygame.Rect(self.offsetx+pos[2]-self.mass2, self.offsety+pos[3]-self.mass2, self.mass2*2, self.mass2*2), width=1) #bob2
+            if self.mass1+self.radius1+self.radius2 > self.mass2+self.radius1+self.radius2: 
+                pygame.draw.rect(WIN, (0, 255, 0), pygame.Rect(self.offsetx-(self.radius1+self.radius2+self.mass1), self.offsety-(self.radius1+self.radius2+self.mass1), (self.radius1+self.radius2+self.mass1)*2, (self.radius1+self.radius2+self.mass1)*2), width=1)
+            else:
+                pygame.draw.rect(WIN, (0, 255, 0), pygame.Rect(self.offsetx-(self.radius1+self.radius2+self.mass2), self.offsety-(self.radius1+self.radius2+self.mass2), (self.radius1+self.radius2+self.mass2)*2, (self.radius1+self.radius2+self.mass2)*2), width=1)
 
-    def drawtail(self, WIN):
+        if self.inWinLine(WIN, self.offsetx, self.offsety, pos[0], pos[1]):
+            pygame.draw.line(WIN, self.color[0]["line1"], start_pos=(self.offsetx, self.offsety), end_pos=(self.offsetx+pos[0], self.offsety+pos[1]))
+        if self.inWinLine(WIN, self.offsetx+pos[0], self.offsety+pos[1], -(pos[0]-pos[2]), -(pos[1]-pos[3])):
+            pygame.draw.line(WIN, self.color[0]["line2"], start_pos=(self.offsetx+pos[0], self.offsety+pos[1]), end_pos=(self.offsetx+pos[2], self.offsety+pos[3]))
+        if self.inWinBob(WIN, self.offsetx+pos[0], self.offsety+pos[1], self.mass1):
+            pygame.draw.circle(WIN, (0, 0, 0), (self.offsetx+pos[0], self.offsety+pos[1]), radius=self.mass1-(circleWidth), width=0)
+            pygame.draw.circle(WIN, self.color[0]["bob2"], (self.offsetx+pos[0], self.offsety+pos[1]), radius=self.mass1, width=circleWidth)
+        if self.inWinBob(WIN, self.offsetx+pos[2], self.offsety+pos[3], self.mass2):
+            pygame.draw.circle(WIN, (0, 0, 0), (self.offsetx+pos[2], self.offsety+pos[3]), radius=self.mass2-(circleWidth), width=0)
+            pygame.draw.circle(WIN, self.color[0]["bob2"], (self.offsetx+pos[2], self.offsety+pos[3]), radius=self.mass2, width=circleWidth)
+
+        if hitbox: drawhitbox()
+
+    def drawtail(self, WIN, hitbox):
         pos = [self.x1, self.y1, self.x2, self.y2]
         # pygame.draw.line(WIN, t[4], start_pos=(self.offsetx+t[0], self.offsety+t[1]), end_pos=(self.offsetx+t[2], self.offsety+t[3]), width=t[5])
         for t in self.tail:
             pygame.draw.line(WIN, t[4], start_pos=(self.offsetx+t[0], self.offsety+t[1]), end_pos=(self.offsetx+t[2], self.offsety+t[3]), width=int(t[5]))
             pygame.draw.circle(WIN, t[4], (self.offsetx+t[0], self.offsety+t[1]), radius=int(t[5]))
+            if hitbox:
+                pygame.draw.rect(WIN, (0, 0, 255), pygame.Rect(self.offsetx+t[0]-int(t[5]), self.offsety+t[1]-int(t[5]), int(t[5])*2, int(t[5])*2), width=1) #circle
+                pygame.draw.rect(WIN, (0, 0, 255), pygame.Rect(self.offsetx+t[0], self.offsety+t[1], -(t[0]-t[2]), -(t[1]-t[3])), width=1) #line
+
         if len(self.tail) >= 1: pygame.draw.circle(WIN, self.tail[-1][4], (self.offsetx+pos[2], self.offsety+pos[3]), radius=self.tail[-1][5]-5)
+
+    def inWinBob(self, WIN, x, y, radius):
+        if x-radius > WIN.get_width(): return False
+        if y-radius > WIN.get_height(): return False
+        if x+radius < 0: return False
+        if y+radius < 0: return False
+        return True
+    
+    def inWinLine(self, WIN, x, y, sizex, sizey):
+        if x + sizex < 0 and x - sizex < 0: return False
+        if y + sizey < 0 and y - sizey < 0: return False
+        if x + sizex > WIN.get_width() and x - sizex > WIN.get_width(): return False
+        if y + sizey > WIN.get_height() and y - sizey > WIN.get_height(): return False
+        return True
+
+
+
+
+
+        if self.offsetx + pos[0] < 0: return False
+        if self.offsety + pos[1] < 0: return False
+        # if (self.offsetx + pos[0]) - (pos[0]-pos[2]) > WIN.get_width(): return False
+        # if (self.offsety+pos[1]) - (pos[1]-pos[3]) > WIN.get_height(): return False
+        if (self.offsetx + pos[0]) - (pos[0]-pos[2]) > 1000: return False
+        if (self.offsety+pos[1]) - (pos[1]-pos[3]) > 1000: return False
+        return True
 
 class Slider:
     def __init__(self, xsize:int, ysize:int, xpos:int, ypos:int, current:int, text:str):

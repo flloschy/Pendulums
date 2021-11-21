@@ -33,21 +33,22 @@ clock = pygame.time.Clock()
 
 lastFrameTick = 1
 lastPhysikTick = 1
+hitbox = False
 
-def drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, zoom, lastpos, offsetx, offsety):
+def drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, zoom, lastpos, offsetx, offsety, hitbox):
     clock.tick(FPS)
+    pygame.display.update()
     WIN.blit(s, (0, 0))
+
+
     l, m, r = pygame.mouse.get_pressed()
     x, y = pygame.mouse.get_pos()
-
-    pygame.display.update()
-
     for pend in Pendulums:
-        pend.drawtail(WIN)
+        pend.drawtail(WIN, hitbox)
 
     for pend in Pendulums:
         pend.g = globalgravity
-        pend.draw(WIN)
+        pend.draw(WIN, hitbox)
 
     pygame.draw.rect(WIN, Color.black, pygame.Rect(0, 0, 330, 100))
 
@@ -75,8 +76,8 @@ def drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, z
                         x, y = pygame.mouse.get_pos()
                         _, m , r = pygame.mouse.get_pressed()
                         for pen in Pendulums:
-                            pen.draw(WIN)
-                            pen.drawtail(WIN)
+                            pen.draw(WIN, hitbox)
+                            pen.drawtail(WIN, hitbox)
                         for event in pygame.event.get():
                             if event.type == pygame.QUIT:
                                 exit()
@@ -165,6 +166,9 @@ def drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, z
                             break
                     print("loaded...")
 
+                elif event.key == pygame.K_h:
+                    if hitbox: hitbox = False
+                    else: hitbox = True
 
             elif event.type == pygame.MOUSEBUTTONUP and not slided and r:
                 try: c = choice(Color.listing)
@@ -200,7 +204,7 @@ def drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, z
 
     WIN.blit(FONT.render(f'FPS: {round(clock.get_fps(), 0)}', False, Color.white), (10, 70))
     lastpos = [x, y]
-    return globalgravity, TPS, zoom, lastpos, s, offsetx, offsety
+    return globalgravity, TPS, zoom, lastpos, s, offsetx, offsety, hitbox
 
 def physiktick():
     for pen in Pendulums:
@@ -213,6 +217,6 @@ while True:
         lastPhysikTick = time.perf_counter()
 
     if time.perf_counter() - lastFrameTick > 1/FPS:
-        globalgravity, TPS, zoom, lastpos, s, offsetx, offsety = \
-            drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, zoom, lastpos, offsetx, offsety)
+        globalgravity, TPS, zoom, lastpos, s, offsetx, offsety, hitbox = \
+            drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, zoom, lastpos, offsetx, offsety, hitbox)
         lastFrameTick = time.perf_counter()
