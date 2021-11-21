@@ -1,7 +1,9 @@
 from modules import Color, DoublePendulum, Slider
 from random import choice
-import pygame, time
+import pygame, time, json, os
 pygame.font.init()
+
+if os.path.isfile("./v3/saves/placeholder"): os.remove("./v3/saves/placeholder")
 
 FPS = 60
 TPS = FPS * 2
@@ -120,6 +122,49 @@ def drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, z
                     Pendulums.append(DoublePendulum(offsetx, offsety, c, c, c, c, c))
                     slider[0].current = 200
                     slider[1].current = TPS
+                elif event.key == pygame.K_s:
+                    preparedPends = []
+                    for pen in Pendulums: preparedPends.append(vars(pen))
+                    save = {"g": globalgravity, "pend": preparedPends}
+                    file = f'./v3/saves/{time.strftime("%Y-%m-%d_%H-%M-%S.json")}'
+                    try: json.dump(save, open(file, "x"), indent = 0)
+                    except: print("Loading Failed...")
+                elif event.key == pygame.K_l:
+                    dirlist = os.listdir("./v3/saves/")
+                    if not dirlist: print("\n--- There are no saves.\n"); continue
+                    for i, file in enumerate(dirlist): print(f'{i}\t| {file}')
+                    while True:
+                        try: choosen = int(input(f"Choose a file between 0 and {len(dirlist)-1}\n--->   "))
+                        except: print("\n--- Input needs to be a number\n"); continue
+                        if not (0 <= choosen <= len(dirlist)-1): print(f"\n--- index not between 0 and {len(dirlist)-1}\n")
+                        else:
+                            Pendulums.clear()
+                            data = json.load(open(f"./v3/saves/{dirlist[choosen]}"))
+                            globalgravity = data['g']
+                            for pen in data['pend']:
+                                Pendulums.append(DoublePendulum(
+                                    pen['offsetx'],
+                                    pen['offsety'],
+                                    pen['tailcol'], 
+                                    pen['color'][0]['line1'],
+                                    pen['color'][0]['line2'],
+                                    pen['color'][0]['bob1'],
+                                    pen['color'][0]['bob2'],
+                                    radius1=pen['radius1'],
+                                    radius2=pen['radius2'],
+                                    mass1=pen['mass1'],
+                                    mass2=pen['mass2'],
+                                    a1=pen['a1'],
+                                    a2=pen['a2'],
+                                    a1_v=pen['a1_v'],
+                                    a2_v=pen['a2_v'],
+                                    g=globalgravity,
+                                    tail=pen['tail']
+                                    )
+                                )
+                            break
+                    print("loaded...")
+
 
             elif event.type == pygame.MOUSEBUTTONUP and not slided and r:
                 try: c = choice(Color.listing)

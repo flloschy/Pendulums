@@ -54,16 +54,32 @@ class Color:
             self.listing.append((rint(0, 255), rint(0, 255), rint(0, 255)))
 
 class DoublePendulum:
-    def __init__(self, x, y, tailcolor, linecolor1, linecolor2, bob1, bob2):
-        self.radius1, self.radius2 = rint(20, 400), rint(20, 400)
-        self.mass1, self.mass2 = rint(1, 80), rint(1, 80)
-        self.a1, self.a2 = math.pi/rint(1, 8), math.pi/rint(1, 8)
-        self.a1_v, self.a2_v = 0, 0
-        self.g, self.tailcol = 1, tailcolor
+    def __init__(self, x, y, tailcolor, linecolor1, linecolor2, colorbob1, colorbob2, radius1=None, radius2=None, mass1=None, mass2=None, a1=None, a2=None, a1_v=None, a2_v=None, g=None, tail=None):
+        if radius1 == None: self.radius1 = rint(20, 400)
+        else: self.radius1 = radius1
+        if radius2 == None: self.radius2 = rint(20, 400)
+        else: self.radius2 = radius2
+        if mass1 == None: self.mass1 = rint(1, 80)
+        else: self.mass1 = mass1
+        if mass2 == None: self.mass2 = rint(1, 80)
+        else: self.mass2 = mass2
+        if a1 == None: self.a1 = math.pi/rint(1, 8)
+        else: self.a1 = a1
+        if a2 == None: self.a2 = math.pi/rint(1, 8)
+        else: self.a2 = a2
+        if a1_v == None: self.a1_v = 0
+        else: self.a1_v = a1_v
+        if a2_v == None: self.a2_v = 0
+        else: self.a2_v = a2_v
+        if g == None: self.g = 1
+        else: self.g = g
+        self.tailcol = tailcolor
         self.lastx2, self.lasty2 = -1, -1
         self.offsetx, self.offsety = x, y
-        self.tail, self.friction = [], 1
-        self.color = {"line1": linecolor1, "line2": linecolor2, "bob1": bob1, "bob2": bob2},
+        if tail == None: self.tail = []
+        else: self.tail = tail
+        self.friction = 1
+        self.color = {"line1": linecolor1, "line2": linecolor2, "bob1": colorbob1, "bob2": colorbob2},
         self.x1, self.y1 = 0, 0
         self.x2, self.y2 = 0, 0
 
