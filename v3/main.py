@@ -1,6 +1,8 @@
 from modules import Color, DoublePendulum, Slider
 from random import choice
 import pygame, time, json, os
+from termcolor import cprint as p
+from termcolor import colored as col
 pygame.font.init()
 
 if os.path.isfile("./v3/saves/placeholder"): os.remove("./v3/saves/placeholder")
@@ -130,15 +132,18 @@ def drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, z
                     save = {"g": globalgravity, "pend": preparedPends}
                     file = f'./v3/saves/{time.strftime("%Y-%m-%d_%H-%M-%S.json")}'
                     try: json.dump(save, open(file, "x"), indent = 1)
-                    except Exception: print("Saving Failed...")
+                    except Exception: p("Saving Failed...", "red")
+                    else: p("Saved", "green")
                 elif event.key == pygame.K_l:
                     dirlist = os.listdir("./v3/saves/")
-                    if not dirlist: print("\n--- There are no saves.\n"); continue
-                    for i, file in enumerate(dirlist): print(f'{i}\t| {file}')
+                    if not dirlist: p("\n--- There are no saves.\n", "red"); continue
+                    p("index", "yellow", attrs=["underline"], end=''); p("\t| ", attrs=["underline"], end=''); p("Year-Month-Day_Hour-Minute-Seconds", "green", attrs=["underline"])
+                    for i, file in enumerate(dirlist): p(f'{i}', "yellow", end=''); p("\t| ", end=''); p(f'{file}', "green")
                     while True:
-                        try: choosen = int(input(f"Choose a file between 0 and {len(dirlist)-1}\n--->   "))
-                        except: print("\n--- Input needs to be a number\n"); continue
-                        if not (0 <= choosen <= len(dirlist)-1): print(f"\n--- index not between 0 and {len(dirlist)-1}\n")
+                        try: choosen = int(input(col(f"Choose a file between 0 and {len(dirlist)-1}\n--->   ", "cyan")))
+                        except KeyboardInterrupt: exit(1)
+                        except: p("\n--- Input needs to be a number\n", "red"); continue
+                        if not (0 <= choosen <= len(dirlist)-1): p(f"\n--- index not between 0 and {len(dirlist)-1}\n", "red")
                         else:
                             Pendulums.clear()
                             data = json.load(open(f"./v3/saves/{dirlist[choosen]}"))
@@ -165,7 +170,7 @@ def drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, z
                                     )
                                 )
                             break
-                    print("loaded...")
+                    p("loaded...", "green")
 
                 elif event.key == pygame.K_h:
                     if hitbox: hitbox = False

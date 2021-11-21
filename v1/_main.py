@@ -2,8 +2,6 @@ import pygame, math
 pygame.font.init()
 from random import randint as rint
 
-print(math.pi)
-
 WIDTH, HEIGHT = 1000, 1000
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 FONT = pygame.font.SysFont(pygame.font.get_default_font(), 20)

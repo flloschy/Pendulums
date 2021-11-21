@@ -113,8 +113,6 @@ while True:
         laspos = [x, y]
         last = time.perf_counter()
 
-    print(zoom)
-
     tick += 1
     WIN.blit(FONT.render(f'FPS: {round(FPS, 0)}', False, Color.white), (10, 70))
     FPS = clock.get_fps()
