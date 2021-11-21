@@ -125,7 +125,8 @@ def drawframe(s, Pendulums, globalgravity, slider, WIN, FONT, Color, TPS, FPS, z
                     slider[1].current = TPS
                 elif event.key == pygame.K_s:
                     preparedPends = []
-                    for pen in Pendulums: preparedPends.append(vars(pen))
+                    for pen in Pendulums.copy(): preparedPends.append(vars(pen))
+                    for pen in preparedPends: pen["tail"] = []
                     save = {"g": globalgravity, "pend": preparedPends}
                     file = f'./v3/saves/{time.strftime("%Y-%m-%d_%H-%M-%S.json")}'
                     try: json.dump(save, open(file, "x"), indent = 0)
