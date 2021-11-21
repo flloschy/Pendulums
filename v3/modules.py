@@ -162,8 +162,10 @@ class DoublePendulum:
         pos = [self.x1, self.y1, self.x2, self.y2]
         # pygame.draw.line(WIN, t[4], start_pos=(self.offsetx+t[0], self.offsety+t[1]), end_pos=(self.offsetx+t[2], self.offsety+t[3]), width=t[5])
         for t in self.tail:
-            pygame.draw.line(WIN, t[4], start_pos=(self.offsetx+t[0], self.offsety+t[1]), end_pos=(self.offsetx+t[2], self.offsety+t[3]), width=int(t[5]))
-            pygame.draw.circle(WIN, t[4], (self.offsetx+t[0], self.offsety+t[1]), radius=int(t[5]))
+            if self.inWinLine(WIN, self.offsetx+t[0], self.offsety+t[1], self.offsetx+t[2], self.offsety+t[3]):
+                pygame.draw.line(WIN, t[4], start_pos=(self.offsetx+t[0], self.offsety+t[1]), end_pos=(self.offsetx+t[2], self.offsety+t[3]), width=int(t[5]))
+            if self.inWinBob(WIN, self.offsetx+t[0], self.offsety+t[1], int(t[5])):
+                pygame.draw.circle(WIN, t[4], (self.offsetx+t[0], self.offsety+t[1]), radius=int(t[5]))
             if hitbox:
                 pygame.draw.rect(WIN, (0, 0, 255), pygame.Rect(self.offsetx+t[0]-int(t[5]), self.offsety+t[1]-int(t[5]), int(t[5])*2, int(t[5])*2), width=1) #circle
                 pygame.draw.rect(WIN, (0, 0, 255), pygame.Rect(self.offsetx+t[0], self.offsety+t[1], -(t[0]-t[2]), -(t[1]-t[3])), width=1) #line
@@ -176,7 +178,7 @@ class DoublePendulum:
         if x+radius < 0: return False
         if y+radius < 0: return False
         return True
-    
+
     def inWinLine(self, WIN, x, y, sizex, sizey):
         if x + sizex < 0 and x - sizex < 0: return False
         if y + sizey < 0 and y - sizey < 0: return False
